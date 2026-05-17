@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { ChevronDown, LoaderCircle, LogOut, Music2 } from "lucide-react"
+import { ChevronDown, LoaderCircle, LogOut, Music2, RefreshCcw } from "lucide-react"
 import { Link, NavLink, Navigate, Outlet } from "react-router-dom"
 
-import { Button } from "@/components/ui/button"
-import { useSpotifySession } from "@/features/spotify/use-spotify-session"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { formatExpiresAt, getErrorMessage, useSpotifySession } from "@/features/spotify/use-spotify-session"
 import { cn } from "@/lib/utils"
 
 import { primaryNavigation } from "../root/navigation"
@@ -20,11 +20,12 @@ function getInitials(name?: string | null, fallbackId?: string | null) {
 }
 
 export function AppLayout() {
-  const { authStatusQuery, whoAmIQuery, handleSpotifyLogout, isAuthenticated, isLoggingOut } = useSpotifySession()
+  const { authStatusQuery, whoAmIQuery, handleSpotifyLogout, isAuthenticated, isLoggingOut, refreshSession } = useSpotifySession()
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
 
   const displayName = whoAmIQuery.data?.display_name || whoAmIQuery.data?.id || "Spotify user"
+  const accountSummary = [whoAmIQuery.data?.email, whoAmIQuery.data?.country, whoAmIQuery.data?.product].filter(Boolean).join(" | ")
   const avatarInitials = useMemo(
     () => getInitials(whoAmIQuery.data?.display_name, whoAmIQuery.data?.id),
     [whoAmIQuery.data?.display_name, whoAmIQuery.data?.id],
@@ -92,7 +93,7 @@ export function AppLayout() {
               <button
                 type="button"
                 onClick={() => setIsProfileOpen((open) => !open)}
-                className="flex items-center gap-2 rounded-full border border-white/10 bg-card/85 p-1.5 pr-3 transition-colors hover:border-white/20 hover:bg-card"
+                className="flex items-center gap-2 rounded-full border border-border bg-background px-1.5 py-1.5 pr-3 shadow-sm transition-colors hover:border-foreground/15 hover:bg-card"
                 aria-haspopup="menu"
                 aria-expanded={isProfileOpen}
               >
@@ -113,19 +114,55 @@ export function AppLayout() {
 
               {isProfileOpen ? (
                 <div
-                  className="absolute right-0 top-[calc(100%+0.75rem)] z-30 min-w-[240px] rounded-3xl border border-white/10 bg-card/96 p-2 shadow-panel backdrop-blur-xl"
+                  className="absolute right-0 top-[calc(100%+0.75rem)] z-30 min-w-[300px] rounded-3xl border border-border bg-background p-3 shadow-2xl"
                   role="menu"
                 >
-                  <div className="rounded-2xl px-3 py-3">
+                  <div className="rounded-2xl border border-border bg-card px-3 py-3">
                     <p className="font-semibold text-foreground">{displayName}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{accountSummary || "Spotify account connected"}</p>
+                  </div>
+                  <div className="mt-3 rounded-2xl border border-border bg-card px-3 py-3">
+                    <p className="text-xs font-semibold tracking-[0.2em] text-foreground/55 uppercase">Session</p>
+                    <p className="mt-3 text-sm font-medium text-foreground">{isAuthenticated ? "Connected" : "Not connected"}</p>
+                    <p className="mt-3 text-xs font-semibold tracking-[0.2em] text-foreground/55 uppercase">Token expires</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {whoAmIQuery.data?.email || whoAmIQuery.data?.country || "Spotify account connected"}
+                      {isAuthenticated ? formatExpiresAt(authStatusQuery.data?.expires_at) : "No active Spotify session"}
                     </p>
                   </div>
-                  <div className="my-1 h-px bg-white/10" />
+                  {authStatusQuery.isError ? (
+                    <p className="mt-3 rounded-2xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                      {getErrorMessage(authStatusQuery.error)}
+                    </p>
+                  ) : null}
+                  {whoAmIQuery.isError ? (
+                    <p className="mt-3 rounded-2xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                      {getErrorMessage(whoAmIQuery.error)}
+                    </p>
+                  ) : null}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      className="rounded-2xl bg-background"
+                      onClick={() => void refreshSession()}
+                    >
+                      <RefreshCcw className="h-4 w-4" />
+                      Refresh
+                    </Button>
+                    {whoAmIQuery.data?.profile_url ? (
+                      <a
+                        href={whoAmIQuery.data.profile_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={cn(buttonVariants({ variant: "secondary" }), "rounded-2xl border border-border bg-card")}
+                      >
+                        Open profile
+                      </a>
+                    ) : null}
+                  </div>
+                  <div className="my-3 h-px bg-border" />
                   <Button
                     variant="ghost"
-                    className="w-full justify-start rounded-2xl"
+                    className="w-full justify-start rounded-2xl bg-background hover:bg-card"
                     disabled={isLoggingOut}
                     onClick={async () => {
                       setIsProfileOpen(false)
