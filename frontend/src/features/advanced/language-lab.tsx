@@ -84,12 +84,12 @@ export function LanguageLab() {
       <Card className="animate-fade-up [animation-delay:180ms]">
         <CardHeader>
           <div className="flex flex-wrap items-center gap-2">
-            <CardTitle>Language-based playlist builder</CardTitle>
+            <CardTitle>Detect playlist-ready language groups</CardTitle>
             <Badge variant="outline">Beta</Badge>
           </div>
           <CardDescription>
-            Detect likely languages from track and artist names, then inspect the grouped results before creating a
-            playlist. Treat the suggestions as a helpful starting point, not a guaranteed classification.
+            Detect likely languages from track and artist names, then review the grouped results before choosing which
+            one deserves its own playlist. Treat the suggestions as a helpful starting point, not a guaranteed classification.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -104,17 +104,17 @@ export function LanguageLab() {
             ) : (
               <Languages className="h-4 w-4" />
             )}
-            Load language groups
+            Scan liked songs by language
           </Button>
 
           {!isAuthenticated ? (
-            <AuthRequiredNotice message="Connect Spotify first to inspect language group suggestions." />
+            <AuthRequiredNotice message="Connect Spotify first to inspect language playlist suggestions." />
           ) : null}
 
           <JobStatusCard
             job={activeLanguageJob}
-            title="Language grouping job"
-            idleMessage="Run the beta language scan when you want a creative, approximate grouping of your liked songs."
+            title="Language scan"
+            idleMessage="Run the language scan when you want an approximate grouping of your liked songs before building a playlist."
           />
 
           {startLanguageJobMutation.isError ? (
@@ -162,17 +162,17 @@ export function LanguageLab() {
 
       <Card className="animate-fade-up [animation-delay:220ms]">
         <CardHeader>
-          <CardTitle>Create playlist by language</CardTitle>
+          <CardTitle>Create a language playlist</CardTitle>
           <CardDescription>
-            Keep the selection tighter by requiring a minimum detected track count before the playlist is created.
+            Tighten the selection by requiring a minimum detected track count before the playlist is created.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="rounded-3xl border border-border bg-muted/45 p-4">
-            <p className="text-sm font-medium text-foreground">Current language</p>
+            <p className="text-sm font-medium text-foreground">Selected language</p>
             <p className="mt-2 text-lg font-semibold uppercase">{selectedLanguage || "No language selected yet"}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Beta suggestions are based on track and artist naming, so double-check the selection before creating a playlist.
+              Suggestions are based on track and artist naming, so give the selection a quick sanity check before creating a playlist.
             </p>
           </div>
 
@@ -205,7 +205,7 @@ export function LanguageLab() {
                 ) : (
                   <Download className="h-4 w-4" />
                 )}
-                Create language playlist
+                Create playlist
               </Button>
             </div>
           </form>

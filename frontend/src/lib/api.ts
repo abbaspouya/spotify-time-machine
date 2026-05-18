@@ -14,7 +14,6 @@ import type {
   ImportSnapshotResponse,
   LanguageGroupsResponse,
   PlaylistMutationResponse,
-  SearchArtistsResponse,
   SpotifyAccountRole,
   AsyncJob,
   TopTracksRequest,
@@ -275,15 +274,6 @@ export async function appendPlaylist(payload: AppendPlaylistPayload, accountRole
     method: "POST",
     body: JSON.stringify(payload),
   })
-}
-
-export async function searchArtists(query: string, limit = 8) {
-  return request<SearchArtistsResponse>(
-    `/search_artists${buildQuery({
-      q: query,
-      limit,
-    })}`,
-  )
 }
 
 export async function exportSnapshot(payload: ExportSnapshotPayload, accountRole?: SpotifyAccountRole) {

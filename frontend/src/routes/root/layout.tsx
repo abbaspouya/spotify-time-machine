@@ -54,7 +54,7 @@ export function RootLayout() {
             <p className="font-display text-xl text-foreground">Spotify Time Machine</p>
             <p className="max-w-md text-sm text-muted-foreground">
               Connect Spotify, then keep the real product inside the dashboard where playlist creation, transfers, and
-              advanced tools can stay focused.
+              language-based playlist building can stay focused.
             </p>
           </div>
 
@@ -70,8 +70,8 @@ export function RootLayout() {
               <Link to="/app/transfer-library" className="transition-colors hover:text-foreground">
                 Transfer Library
               </Link>
-              <Link to="/app/advanced" className="transition-colors hover:text-foreground">
-                Advanced
+              <Link to="/app/language-playlists" className="transition-colors hover:text-foreground">
+                Language Playlists
               </Link>
             </div>
           </div>

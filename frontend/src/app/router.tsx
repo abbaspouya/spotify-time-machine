@@ -1,8 +1,8 @@
 import { Navigate, createBrowserRouter } from "react-router-dom"
 
 import { AppLayout } from "@/routes/app/layout"
-import { AdvancedPage } from "@/routes/advanced/route"
 import { AuthCallbackPage } from "@/routes/auth/callback/route"
+import { LanguagePlaylistsPage } from "@/routes/advanced/route"
 import { HomePage } from "@/routes/home/route"
 import { LandingPage } from "@/routes/landing/route"
 import { RootLayout } from "@/routes/root/layout"
@@ -32,7 +32,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "advanced",
-        element: <Navigate to="/app/advanced" replace />,
+        element: <Navigate to="/app/language-playlists" replace />,
+      },
+      {
+        path: "language-playlists",
+        element: <Navigate to="/app/language-playlists" replace />,
       },
       {
         path: "dashboard",
@@ -62,7 +66,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "advanced",
-        element: <AdvancedPage />,
+        element: <Navigate to="/app/language-playlists" replace />,
+      },
+      {
+        path: "language-playlists",
+        element: <LanguagePlaylistsPage />,
       },
     ],
   },

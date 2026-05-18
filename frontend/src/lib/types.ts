@@ -150,21 +150,6 @@ export type CreateLanguagePlaylistPayload = {
   min_songs: number
 }
 
-export type Artist = {
-  id: string
-  name: string
-  popularity: number | null
-  genres: string[]
-  image_url: string | null
-  spotify_url: string
-}
-
-export type SearchArtistsResponse = {
-  query: string
-  count: number
-  artists: Artist[]
-}
-
 export type ExportSnapshotPayload = {
   cutoff_date?: string
   include_playlists: boolean

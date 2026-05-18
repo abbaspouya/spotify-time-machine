@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowRightLeft, Disc3, Sparkles } from "lucide-react"
+import { ArrowRight, ArrowRightLeft, Languages, Sparkles } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { buttonVariants } from "@/components/ui/button"
@@ -27,7 +27,7 @@ export function HomePage() {
           <div className="space-y-2">
             <h1 className="max-w-3xl text-3xl leading-tight md:text-4xl">Open the Spotify workflow you need.</h1>
             <p className="max-w-2xl text-sm text-muted-foreground md:text-base">
-              Time Machine, library transfer, and advanced experiments each live in their own focused space.
+              Time Machine, library transfer, and language-based playlist building each live in their own focused space.
             </p>
           </div>
         </div>
@@ -71,15 +71,15 @@ export function HomePage() {
         <Card className="animate-fade-up [animation-delay:260ms]">
           <CardHeader>
             <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/12 text-primary">
-              <Disc3 className="h-5 w-5" />
+              <Languages className="h-5 w-5" />
             </div>
-            <CardTitle>Advanced</CardTitle>
-            <CardDescription>Experimental tools like language grouping and artist lookup now have their own home.</CardDescription>
+            <CardTitle>Language Playlists</CardTitle>
+            <CardDescription>Detect song-language groups in your liked songs and turn the one you choose into a playlist.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-muted-foreground">
-            <p>Explore language grouping and artist search without interrupting the main flows.</p>
-            <Link to="/app/advanced" className={buttonVariants({ variant: "secondary" })}>
-              Open Advanced
+            <p>Scan your library, choose a detected language group, and build a playlist around it.</p>
+            <Link to="/app/language-playlists" className={buttonVariants({ variant: "secondary" })}>
+              Open Language Playlists
               <ArrowRight className="h-4 w-4" />
             </Link>
           </CardContent>

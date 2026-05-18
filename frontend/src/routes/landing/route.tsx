@@ -4,8 +4,8 @@ import {
   CalendarRange,
   Check,
   Disc3,
+  Languages,
   LibraryBig,
-  Microscope,
   ShieldCheck,
 } from "lucide-react"
 import { Link } from "react-router-dom"
@@ -30,18 +30,18 @@ const productCards = [
     label: "Migration flow",
   },
   {
-    title: "Advanced",
-    description: "Keep experimental tools like language grouping and artist lookup available without crowding the core product.",
-    to: "/app/advanced",
-    icon: Microscope,
-    label: "Extra tools",
+    title: "Language Playlists",
+    description: "Scan liked songs by detected language, pick a group you want, and turn it into a playlist.",
+    to: "/app/language-playlists",
+    icon: Languages,
+    label: "Playlist builder",
   },
 ] as const
 
 const steps = [
   "Connect Spotify once so the app can work against your current account.",
   "Choose the flow you want from the dashboard instead of sorting through every tool on the homepage.",
-  "Create time-capsule playlists, transfer a library, or explore advanced tools when you need them.",
+  "Create time-capsule playlists, transfer a library, or build playlists around the language you want to hear.",
 ] as const
 
 const trustPoints = [
@@ -67,8 +67,8 @@ export function LandingPage() {
               Turn your Spotify library into time-capsule playlists and cleaner transfers.
             </h1>
             <p className="max-w-2xl text-base text-muted-foreground md:text-lg">
-              Connect once, then group liked songs by time, preview library snapshots before import, and keep advanced
-              tools available without making the first screen feel like a dashboard.
+              Connect once, then group liked songs by time, preview library snapshots before import, and build
+              language-based playlists without making the first screen feel like a dashboard.
             </p>
           </div>
 
@@ -92,7 +92,7 @@ export function LandingPage() {
           <div className="mt-8 flex flex-wrap gap-2 text-sm text-muted-foreground">
             <span className="metric-pill">Liked songs into playlists</span>
             <span className="metric-pill">Snapshot preview before import</span>
-            <span className="metric-pill">Advanced tools kept separate</span>
+            <span className="metric-pill">Language-based playlist builder</span>
           </div>
         </div>
 
