@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import type { FormEvent } from "react"
-import { ArrowRight, Download, ExternalLink, LoaderCircle, Music4 } from "lucide-react"
+import { ArrowRight, CalendarRange, CheckCircle2, Download, ExternalLink, ListMusic, LoaderCircle, Music4, Sparkles } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"
 
 import { createPlaylistForGroup, startGroupedSongsJob } from "@/lib/api"
@@ -9,7 +9,6 @@ import { AuthRequiredNotice } from "@/features/spotify/auth-required-notice"
 import { getErrorMessage, useSpotifySession } from "@/features/spotify/use-spotify-session"
 import { JobStatusCard } from "@/features/jobs/job-status-card"
 import { isActiveJobStatus, useAsyncJob } from "@/features/jobs/use-async-job"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -46,6 +45,12 @@ const periodOptions = [
 const orderOptions = [
   { label: "Oldest to newest", value: "asc" },
   { label: "Newest to oldest", value: "desc" },
+]
+
+const timelinePreview = [
+  { label: "Mar 2020", tracks: "46 tracks", width: "78%" },
+  { label: "Apr 2020", tracks: "33 tracks", width: "58%" },
+  { label: "May 2020", tracks: "61 tracks", width: "92%" },
 ]
 
 function groupCardLabel(groupKey: string, trackIds: string[]) {
@@ -131,68 +136,77 @@ export function TimeMachineTool() {
     void groupedPlaylistMutation.mutateAsync()
   }
 
-  const flowSteps = [
-    {
-      label: "Set filters",
-      state: groupedResult ? "done" : "current",
-    },
-    {
-      label: "Pick a group",
-      state: selectedGroup ? "done" : groupedEntries.length ? "current" : "pending",
-    },
-    {
-      label: "Create playlist",
-      state: groupedPlaylistMutation.data ? "done" : selectedGroup ? "current" : "pending",
-    },
-  ] as const
-
   return (
     <section id="time-machine-tool" className="section-shell animate-fade-up overflow-hidden">
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="hero-badge">One connected workflow</span>
-        <Badge variant={selectedGroup ? "default" : "outline"}>
-          {selectedGroup ? `${selectedGroup} selected` : "Choose a time slice"}
-        </Badge>
-      </div>
-
-      <div className="mt-6 space-y-4">
-        <h2 className="max-w-3xl text-3xl leading-tight md:text-4xl">Build the groups, pick the slice, create the playlist.</h2>
-        <p className="max-w-3xl text-base text-muted-foreground md:text-lg">
-          The flow now behaves like one machine: configure the grouping on the left, choose the slice that looks right,
-          and send it forward into playlist creation on the right.
-        </p>
-      </div>
-
-      <div className="mt-8 flex items-center gap-3 overflow-x-auto pb-2">
-        {flowSteps.map((step, index) => (
-          <div key={step.label} className="flex items-center gap-3">
-            <div
-              className={cn(
-                "flex min-w-fit items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors",
-                step.state === "done"
-                  ? "border-primary/30 bg-primary/12 text-primary"
-                  : step.state === "current"
-                    ? "border-white/15 bg-white/8 text-foreground"
-                    : "border-white/10 bg-transparent text-foreground/55",
-              )}
-            >
-              <span
-                className={cn(
-                  "flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold",
-                  step.state === "done"
-                    ? "bg-primary text-primary-foreground"
-                    : step.state === "current"
-                      ? "bg-white/10 text-foreground"
-                      : "bg-white/5 text-foreground/60",
-                )}
-              >
-                {index + 1}
-              </span>
-              {step.label}
-            </div>
-            {index < flowSteps.length - 1 ? <div className="h-px w-10 shrink-0 bg-gradient-to-r from-primary/35 to-white/10" /> : null}
+      <div className="grid gap-8 rounded-[28px] border border-primary/15 bg-gradient-to-br from-primary/12 via-card to-card p-5 md:p-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="flex max-w-3xl flex-col justify-center space-y-5">
+          <div className="flex items-center gap-3 text-primary">
+            <Sparkles className="h-5 w-5" />
+            <p className="text-xs font-semibold uppercase tracking-[0.22em]">Spotify Time Machine</p>
           </div>
-        ))}
+          <div className="space-y-4">
+            <h1 className="text-4xl leading-tight md:text-5xl">Create playlists from any chapter of your liked songs.</h1>
+            <p className="text-base text-muted-foreground md:text-lg">
+              Choose a period of time from your Spotify history, such as monthly, quarterly, half-yearly, or yearly.
+              Time Machine groups the songs you liked during that period so you can pick the moment you want to hear
+              again.
+            </p>
+            <p className="text-base text-muted-foreground md:text-lg">
+              When you create the playlist, it is added directly to your Spotify account and you can open it there
+              right away.
+            </p>
+          </div>
+          <div className="grid gap-4 border-t border-white/10 pt-5 sm:grid-cols-3">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">Choose a range</p>
+              <p className="text-sm text-muted-foreground">Start with all years, or narrow it down.</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">Preview the slices</p>
+              <p className="text-sm text-muted-foreground">See each period before creating anything.</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">Save to Spotify</p>
+              <p className="text-sm text-muted-foreground">The finished playlist lands in your library.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-[26px] border border-white/10 bg-background/55 p-5 shadow-panel">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+              <CalendarRange className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/55">Example slice</p>
+              <p className="font-display text-xl text-foreground">Spring 2020</p>
+            </div>
+          </div>
+
+          <div className="mt-6 space-y-4">
+            {timelinePreview.map((entry) => (
+              <div key={entry.label} className="grid grid-cols-[76px_minmax(0,1fr)_70px] items-center gap-3">
+                <p className="text-sm font-medium text-foreground">{entry.label}</p>
+                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full rounded-full bg-primary" style={{ width: entry.width }} />
+                </div>
+                <p className="text-right text-xs text-muted-foreground">{entry.tracks}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+              <ListMusic className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-foreground">Playlist appears in Spotify</p>
+              <p className="text-sm text-muted-foreground">
+                {selectedGroup ? `${selectedGroup} is ready below.` : "Load groups below, then choose a time slice."}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="relative mt-8 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
@@ -323,7 +337,14 @@ export function TimeMachineTool() {
                             <p className="font-semibold">{groupKey}</p>
                             <p className="text-sm text-muted-foreground">{trackIds.length} tracks</p>
                           </div>
-                          {selected ? <Badge>Selected</Badge> : <Badge variant="outline">Send right</Badge>}
+                          {selected ? (
+                            <span className="flex items-center gap-2 text-sm font-semibold text-primary">
+                              <CheckCircle2 className="h-4 w-4" />
+                              Selected
+                            </span>
+                          ) : (
+                            <span className="text-sm font-medium text-muted-foreground">Choose</span>
+                          )}
                         </div>
                       </button>
                     )
