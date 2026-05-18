@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import type { FormEvent } from "react"
-import { Download, Languages, ExternalLink, LoaderCircle } from "lucide-react"
+import { CheckCircle2, Download, Languages, ExternalLink, LoaderCircle } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"
 
 import { createPlaylistByLanguage, startLanguageGroupsJob } from "@/lib/api"
@@ -84,12 +84,12 @@ export function LanguageLab() {
       <Card className="animate-fade-up [animation-delay:180ms]">
         <CardHeader>
           <div className="flex flex-wrap items-center gap-2">
-            <CardTitle>Detect playlist-ready language groups</CardTitle>
+            <CardTitle>Scan liked songs by language</CardTitle>
             <Badge variant="outline">Beta</Badge>
           </div>
           <CardDescription>
-            Detect likely languages from track and artist names, then review the grouped results before choosing which
-            one deserves its own playlist. Treat the suggestions as a helpful starting point, not a guaranteed classification.
+            Run the beta detector across your liked songs, review the language groups it finds, and choose the one you
+            want to turn into a playlist.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -150,7 +150,14 @@ export function LanguageLab() {
                         <p className="font-semibold uppercase">{languageCode}</p>
                         <p className="text-sm text-muted-foreground">{trackIds.length} detected tracks</p>
                       </div>
-                      {selected ? <Badge>Selected</Badge> : <Badge variant="outline">Use</Badge>}
+                      {selected ? (
+                        <span className="flex items-center gap-2 text-sm font-semibold text-primary">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Selected
+                        </span>
+                      ) : (
+                        <span className="text-sm font-medium text-muted-foreground">Choose</span>
+                      )}
                     </div>
                   </button>
                 )
@@ -164,7 +171,7 @@ export function LanguageLab() {
         <CardHeader>
           <CardTitle>Create a language playlist</CardTitle>
           <CardDescription>
-            Tighten the selection by requiring a minimum detected track count before the playlist is created.
+            Choose a detected language, optionally name the playlist, then save that language group to Spotify.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -172,7 +179,7 @@ export function LanguageLab() {
             <p className="text-sm font-medium text-foreground">Selected language</p>
             <p className="mt-2 text-lg font-semibold uppercase">{selectedLanguage || "No language selected yet"}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Suggestions are based on track and artist naming, so give the selection a quick sanity check before creating a playlist.
+              Detection is based on track and artist text, so give the group a quick sanity check before creating a playlist.
             </p>
           </div>
 
