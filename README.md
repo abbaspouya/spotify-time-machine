@@ -1,6 +1,75 @@
 # Spotify Time Machine
 
-Full-stack app for connecting a Spotify account, turning liked songs into time-based playlists, and moving library data between accounts with safer snapshot previews.
+Spotify Time Machine is a full-stack Spotify library utility for creating time-based playlists, moving selected library data between accounts, and experimenting with beta language-based playlist creation.
+
+It is built as a portfolio-quality, self-hosted showcase rather than a monetized SaaS product. Spotify API access, review, quotas, and commercial use are governed by Spotify's own developer platform requirements, so this project is presented honestly as an engineering and product-design case study.
+
+![Spotify Time Machine landing page](docs/showcase/screenshots/landing.png)
+
+## What It Does
+
+- **Time Machine**: group liked songs by month, quarter, half-year, or year, then create a playlist from the selected time slice.
+- **Transfer Library**: export a snapshot from one Spotify account, preview what will be imported into another account, and apply only the selected data.
+- **One Playlist Move**: add one playlist into Liked Songs or another playlist in the connected import account.
+- **Language Playlists Beta**: scan liked songs with `langdetect`, choose a detected language group, and create a playlist from it.
+- **Dashboard Recap**: view top tracks after login, with Spotify rate-limit handling.
+
+## Screenshots
+
+| Landing | Time Machine |
+| --- | --- |
+| ![Landing page](docs/showcase/screenshots/landing.png) | ![Time Machine workflow](docs/showcase/screenshots/time-machine.png) |
+
+| Transfer Library | Language Playlists |
+| --- | --- |
+| ![Transfer Library workflow](docs/showcase/screenshots/transfer-library.png) | ![Language Playlists beta workflow](docs/showcase/screenshots/language-playlists.png) |
+
+More showcase notes live in [docs/showcase](docs/showcase/README.md).
+
+## Why It Exists
+
+Spotify libraries can become personal archives: years of liked songs, playlists, albums, and followed artists. The hard part is not listening; it is reshaping that library when you want to revisit a period of time, move to another account, or create a playlist around a specific type of music.
+
+This app turns those jobs into focused workflows:
+
+1. Connect Spotify.
+2. Choose the job you want to do.
+3. Preview or select the result before the app writes anything meaningful back to Spotify.
+
+## Product Notes
+
+This project is not positioned as a commercial product. Spotify's platform has development-mode access, quota extension review, rate limits, and policy requirements for apps that use Spotify APIs. For the current official guidance, see Spotify's [Quota Modes](https://developer.spotify.com/documentation/web-api/concepts/quota-modes), [Developer Policy](https://developer.spotify.com/policy), and [Developer Terms](https://developer.spotify.com/terms).
+
+The practical result: this repository is best used as a self-hosted personal tool, local demo, and portfolio project.
+
+## Tech Stack
+
+**Frontend**
+
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- TanStack Query
+- React Router
+- Lucide icons
+
+**Backend**
+
+- Python
+- FastAPI
+- Spotipy
+- `langdetect`
+- Browser-session Spotify OAuth
+- In-memory async job registry with session-scoped job access
+
+## Architecture Highlights
+
+- **Spotify OAuth with account roles**: source and target accounts can be connected separately for transfer workflows.
+- **Session-scoped jobs**: long-running grouping, export, and import work runs as async jobs tied to the browser session.
+- **Snapshot workflow**: transfer data can be exported as JSON, previewed, and imported with destructive-operation warnings.
+- **Rate-limit handling**: Spotify `429` responses are surfaced in the UI with cooldown messaging.
+- **Privacy-conscious local storage**: local sessions are stored under `backend/.sessions/` for self-hosted development.
 
 ## Repo Layout
 
@@ -9,22 +78,23 @@ Spotify/
   backend/
     app/
     requirements.txt
-    .env
-    .sessions/
-    exports/
+    .env.example
     tests/
   frontend/
-    package.json
     src/
     scripts/
-  .github/workflows/
+    package.json
   docs/
+    showcase/
+    DEPLOYMENT.md
+    PRIVACY.md
+  .github/workflows/
   README.md
 ```
 
 ## Local Setup
 
-### Backend environment
+### Backend Environment
 
 Copy [backend/.env.example](backend/.env.example) to `backend/.env` and fill in your Spotify app credentials.
 
@@ -35,7 +105,7 @@ Important values:
 - `SPOTIFY_REDIRECT_URI`
 - `FRONTEND_URL`
 
-Session and job settings can also be tuned in production:
+Session and job settings can also be tuned:
 
 - `SESSION_COOKIE_SECURE`
 - `SESSION_COOKIE_SAMESITE`
@@ -44,7 +114,7 @@ Session and job settings can also be tuned in production:
 - `JOB_RETENTION_SECONDS`
 - `LOG_LEVEL`
 
-### Frontend environment
+### Frontend Environment
 
 Copy [frontend/.env.example](frontend/.env.example) to `frontend/.env` if you want to override the backend URL.
 
@@ -54,7 +124,7 @@ Backend:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1 ( this one is to activate venv )
+.\.venv\Scripts\Activate.ps1
 pip install -r backend/requirements.txt
 ```
 
@@ -65,7 +135,7 @@ cd frontend
 npm install
 ```
 
-## Run
+## Run Locally
 
 Backend:
 
@@ -82,16 +152,9 @@ npm run dev
 
 Local URLs:
 
-- Backend: `http://127.0.0.1:8000`
 - Frontend: `http://127.0.0.1:5173`
+- Backend: `http://127.0.0.1:8000`
 - Swagger: `http://127.0.0.1:8000/docs`
-
-## Main Product Flows
-
-- `Connect Spotify`: browser-session-based Spotify OAuth and account status
-- `Time Machine`: async grouping of liked songs into time slices and playlist creation
-- `Transfer Library`: snapshot export job, import preview, destructive confirmation, and async import job
-- `Advanced`: beta language grouping plus artist search
 
 ## Development Commands
 
@@ -99,6 +162,12 @@ Backend tests:
 
 ```powershell
 python -m unittest discover -s backend/tests -p "test_*.py" -v
+```
+
+Backend syntax check:
+
+```powershell
+python -m compileall backend/app
 ```
 
 Frontend smoke test:
@@ -115,12 +184,6 @@ cd frontend
 npm run build
 ```
 
-Backend syntax check:
-
-```powershell
-python -m compileall backend/app
-```
-
 ## CI
 
 GitHub Actions runs:
@@ -132,13 +195,13 @@ GitHub Actions runs:
 
 Workflow: [ci.yml](.github/workflows/ci.yml)
 
-## Deployment And Privacy
+## Privacy And Data Handling
 
-- Deployment guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
-- Privacy and data handling: [docs/PRIVACY.md](docs/PRIVACY.md)
+- Spotify OAuth tokens are stored in local browser-session files under `backend/.sessions/`.
+- Snapshot files can be downloaded and uploaded through the browser; local export files may also appear under `backend/exports/`.
+- The app does not need a hosted database for the local/self-hosted workflow.
+- Read the full privacy note in [docs/PRIVACY.md](docs/PRIVACY.md).
 
-## Notes
+## Deployment
 
-- The backend stores browser-session token data under `backend/.sessions/` for local and self-hosted use.
-- Snapshot files can still be written to `backend/exports/`, but the frontend now defaults to browser download/upload flows.
-- Internal auth callback routes are intentionally hidden from the public OpenAPI docs.
+Deployment notes are available in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). If you deploy this publicly, review Spotify's current developer requirements first and avoid presenting the app as a commercial service unless you have the necessary approvals.
