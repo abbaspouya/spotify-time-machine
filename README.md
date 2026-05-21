@@ -186,6 +186,27 @@ Example local frontend `.env`:
 VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
+## Run With Docker Compose
+
+After creating `backend/.env`, you can run both services with Docker Compose:
+
+```powershell
+docker compose up --build
+```
+
+Open:
+
+- Frontend: `http://127.0.0.1:5173`
+- Backend: `http://127.0.0.1:8000`
+- Swagger: `http://127.0.0.1:8000/docs`
+
+The frontend container uses `VITE_API_BASE_URL=http://127.0.0.1:8000` because your browser is outside Docker and reaches the backend through the mapped local port.
+
+Backend session and export data are stored in Docker volumes:
+
+- `backend_sessions`
+- `backend_exports`
+
 ## Install
 
 Backend:
